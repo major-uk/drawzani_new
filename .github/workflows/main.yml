@@ -1,1 +1,31 @@
 
+            - name: Swift test action for Datadog
+  # You may pin to the exact commit or the version.
+  # uses: DataDog/swift-test-action@72dbb684305bfae8f28230a59c02765011937cd4
+  uses: DataDog/swift-test-action@1.0.1
+  with:
+    # Datadog API key
+    api_key: 
+    # Datadog Application key
+    app_key: # optional
+    # (Deprecated) Datadog Application key
+    application_key: # optional
+    # Platform to run: \"ios\", \"macos\" or \"tvos\". By default: \"ios\"
+    platform: # optional, default is ios
+    # .xcworkspace file, if not set, workspace will be autoselected
+    workspace: # optional
+    # .xcodeproj file, if not set, project will be autoselected
+    project: # optional
+    # Scheme to test, if not set, scheme will be autoselected
+    scheme: # optional
+    # Sdk used for building, by default: \"iphonesimulator\" will be used
+    sdk: # optional
+    # Destination for testing, by default: \"platform=iOS Simulator,name=iPhone 13\"
+    destination: # optional
+    # Configuration for testing, by default: \"Debug\"
+    configuration: # optional
+    # Version of the Datagog SDK testing framework to use for testing, by default the latest stable
+    libraryVersion: # optional
+    # These input will be added directly to the build/test command
+    extraParameters: # optional, default is 
+          
