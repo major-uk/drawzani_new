@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ku">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دراوزانی شاهانە - محمد تاریق عارف</title>
+    
+    <!-- کتێبخانەی چارتەکان -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary: #2ecc71; --yellow: #f1c40f; --blue: #3498db; --pink: #fce4ec; --red: #e74c3c; 
+            --orange: #f39c12; --gold: #d4af37; --navy: #001f3f; --silver: #bdc3c7;
+            --bg-img: url('https://raw.githubusercontent.com/Rashwan-Ahmad/images/main/slemani-day.jpg');
+            --overlay: rgba(255, 255, 255, 0.95); --text: #2c3e50; --card: #ffffff;
+            --input-bg: #fff; --input-text: #000;
+        }
+
+        /* --- Dark Mode Variables --- */
+        body.dark-mode {
+            --overlay: rgba(0, 0, 0, 0.92);
+            --text: #ecf0f1;
+            --card: #1e272e;
+            --input-bg: #2d3436;
+            --input-text: #dfe6e9;
+            --blue: #54a0ff;
+        }
+        
+        /* Dark Mode Specific Styles */
+        body.dark-mode .info-card { background: #2c3e50; color: #f1c40f; border-color: #d4af37; }
+        body.dark-mode .card { background: rgba(255,255,255,0.05); border-color: #444; }
+        body.dark-mode input { background-color: var(--input-bg) !important; color: var(--input-text) !important; border-color: #555; }
+        body.dark-mode .result-box { background: #000; color: #2ecc71; border-color: #2ecc71; }
+        body.dark-mode .sidebar { background-color: #000; border-right: 3px solid #d4af37; }
+        body.dark-mode .sidebar a { color: #f1c40f; }
+        body.dark-mode .news-card { background: #2d3436; border-color: #444; }
+        body.dark-mode .news-title { color: #f1c40f; }
+        
+        /* City Ticker Styles (Dark Mode) */
+        body.dark-mode .city-ticker { background: linear-gradient(90deg, #2c3e50, #000); border-color: #d4af37; }
+        body.dark-mode .city-item { color: #fff; border-left: 1px solid #555; }
+
+        #mainContent { display: none; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0; padding: 0; transition: 0.5s;
+            background-image: var(--bg-img); background-size: cover; background-position: center; background-attachment: fixed;
+            min-height: 100vh; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- Splash Screen --- */
+        .splash-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #001f3f; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+        }
+        
+        .enter-btn-wrapper {
+            position: relative; padding: 5px; border-radius: 30px;
+            background: linear-gradient(90deg, var(--navy), var(--gold), var(--navy));
+            background-size: 200% 100%;
+            animation: borderMove 2s linear infinite;
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            color: #001f3f; font-size: 22px; font-weight: 900;
+            padding: 15px 50px; border: none; border-radius: 25px; cursor: pointer;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+            position: relative; overflow: hidden; z-index: 2;
+        }
+        
+        .enter-btn::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes borderMove { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+        @keyframes shine { 0% { left: -100%; } 20% { left: 100%; } 100% { left: 100%; } }
+
+        /* --- Animations --- */
+        .animate-in {
+            animation: unfoldPage 1.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            transform-origin: center top;
+        }
+
+        @keyframes unfoldPage {
+            0% { transform: perspective(1000px) rotateX(90deg) scale(0.8); opacity: 0; }
+            50% { transform: perspective(1000px) rotateX(-10deg) scale(1.02); opacity: 1; }
+            100% { transform: perspective(1000px) rotateX(0) scale(1); opacity: 1; }
+        }
+
+        .moving-border {
+            position: fixed; top: 0; left: 0; width: 100%; height: 5px; z-index: 9999;
+            background: linear-gradient(90deg, var(--navy) 50%, var(--gold) 50%);
+            background-size: 50px 100%;
+            animation: borderScroll 1s linear infinite;
+        }
+        .moving-border-bottom {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 5px; z-index: 9999;
+            background: linear-gradient(90deg, var(--gold) 50%, var(--navy) 50%);
+            background-size: 50px 100%;
+            animation: borderScroll 1s linear infinite reverse;
+        }
+        @keyframes borderScroll { 0% { background-position: 0 0; } 100% { background-position: 50px 0; } }
+
+        /* --- Sidebar & Professional 3D Hover Effects --- */
+        .sidebar {
+            height: 100%; width: 280px; position: fixed;
+            top: 0; left: -280px; 
+            background-color: #001f3f; color: #d4af37;
+            transition: 0.4s; z-index: 2500;
+            border-right: 3px solid #d4af37; padding-top: 60px;
+            overflow-y: auto;
+            perspective: 800px; 
+        }
+
+        .sidebar a {
+            padding: 15px 25px; text-decoration: none; font-size: 18px;
+            color: #d4af37; display: block; 
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+            position: relative;
+            transform-style: preserve-3d;
+            transform-origin: center right;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s, color 0.3s;
+        }
+
+        .sidebar a:hover { 
+            background: linear-gradient(270deg, rgba(212, 175, 55, 0.25), transparent);
+            color: #fff;
+            padding-right: 35px;
+            transform: translateX(-10px) translateZ(20px) rotateY(-5deg);
+            text-shadow: 0 2px 10px rgba(212, 175, 55, 0.6);
+            border-right: 4px solid #d4af37;
+            box-shadow: -5px 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .sidebar-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 25px; background: rgba(0, 0, 0, 0.2); margin-bottom: 10px;
+        }
+
+        .back-btn {
+            background: rgba(212, 175, 55, 0.2); color: #d4af37; border: 2px solid #d4af37;
+            border-radius: 50%; width: 35px; height: 35px; font-size: 18px;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+        }
+        .back-btn:hover { background: #d4af37; color: #001f3f; transform: rotate(90deg); }
+
+        /* Feedback Box */
+        .feedback-box {
+            margin: 20px 15px; padding: 15px; border: 2px dashed #d4af37;
+            border-radius: 15px; background: rgba(212, 175, 55, 0.05);
+            text-align: center; color: #f1c40f;
+        }
+        .feedback-title { font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #d4af37; display: inline-block; }
+        .feedback-email { font-size: 11px; color: white; word-break: break-all; margin-top: 5px; font-family: monospace; }
+
+        .open-btn {
+            position: fixed; top: 15px; left: 15px;
+            font-size: 24px; background: #001f3f; color: #d4af37;
+            border: 2px solid #d4af37; padding: 5px 12px;
+            border-radius: 10px; cursor: pointer; z-index: 2400;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.7);
+            z-index: 3000; backdrop-filter: none;
+        }
+
+        .modal-box {
+            background: white; width: 90%; max-width: 500px;
+            margin: 50px auto; border-radius: 20px; padding: 20px;
+            border: 3px solid #d4af37; position: relative;
+        }
+        
+        body.dark-mode .modal-box { background: #2c3e50; color: white; }
+
+        .close-modal { float: right; font-size: 28px; cursor: pointer; color: red; }
+
+        .news-modal-box { max-width: 600px; height: 80vh; display: flex; flex-direction: column; }
+        .news-header-area { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #d4af37; padding-bottom: 10px; margin-bottom: 10px; }
+        .news-list-container { flex: 1; overflow-y: auto; padding-right: 5px; }
+        .news-card {
+            background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 10px;
+            margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: 0.2s;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        .news-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-left: 4px solid #d4af37; }
+        .news-title { font-weight: bold; font-size: 14px; color: #001f3f; text-decoration: none; line-height: 1.4; }
+        .news-meta { font-size: 11px; color: #7f8c8d; display: flex; justify-content: space-between; }
+        .loading-spinner { text-align: center; padding: 20px; color: #d4af37; font-weight: bold; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
+
+        /* =========================================
+           SMOOTH SCROLLING BREAKING NEWS TICKER (Samsung Style)
+           ========================================= */
+        .ticker-wrap {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            background: linear-gradient(90deg, #001f3f, #003366);
+            border-top: 2px solid #d4af37;
+            border-bottom: 2px solid #d4af37;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            z-index: 5;
+            direction: ltr !important; 
+            margin-top: 10px; 
+        }
+
+        .ticker-label {
+            position: relative;
+            background: #c0392b;
+            color: #fff;
+            height: 100%;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 13px;
+            z-index: 10;
+            box-shadow: -4px 0 8px rgba(0,0,0,0.4);
+            white-space: nowrap;
+            direction: rtl;
+        }
+        
+        .ticker-label::before {
+            content: '⚡'; 
+            margin-left: 5px; 
+            animation: flashIcon 1.5s infinite; 
+        }
+
+        @keyframes flashIcon { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .ticker-move {
+            display: inline-block;
+            white-space: nowrap;
+            direction: ltr; 
+            padding-left: 100%; 
+            padding-right: 0;
+            box-sizing: content-box;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            animation-name: ticker-smooth;
+            animation-duration: 40s;
+            will-change: transform; 
+        }
+
+        .ticker-wrap:hover .ticker-move {
+            animation-play-state: paused;
+        }
+
+        .ticker-item-content {
+            display: inline-block;
+            padding: 0 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #d4af37;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            letter-spacing: 0.5px;
+            direction: rtl;
+            unicode-bidi: embed;
+        }
+
+        @keyframes ticker-smooth {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+        /* ========================================= */
+
+        /* City Ticker */
+        .city-ticker {
+            background: linear-gradient(90deg, #001f3f, #34495e);
+            height: 40px; display: flex; align-items: center;
+            border-bottom: 2px solid #d4af37;
+            margin-bottom: 10px; overflow: hidden; position: relative;
+        }
+        .city-label {
+            background: #2ecc71; color: #fff; height: 100%; padding: 0 15px;
+            display: flex; align-items: center; font-weight: 900; font-size: 12px;
+            z-index: 20; white-space: nowrap; box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        .city-item {
+            display: inline-flex; align-items: center; gap: 5px;
+            color: #d4af37; font-weight: bold; font-size: 14px;
+            margin-left: 30px; padding-left: 30px; border-left: 1px solid rgba(255,255,255,0.2);
+        }
+        .price-up { color: #2ecc71; animation: flashGreen 1s; }
+        .price-down { color: #e74c3c; animation: flashRed 1s; }
+        @keyframes flashGreen { 0% { background: rgba(46,204,113,0.5); } 100% { background: transparent; } }
+        @keyframes flashRed { 0% { background: rgba(231,76,60,0.5); } 100% { background: transparent; } }
+
+        /* General UI */
+        .overlay-div {
+            display: flex; flex-direction: column; flex: 1;
+            background: var(--overlay); gap: 15px; padding: 15px; align-items: center;
+            width: 100%; box-sizing: border-box;
+        }
+        .app-container {
+            display: flex; flex-direction: column; width: 100%; max-width: 900px;
+            background: var(--card); border-radius: 35px; box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+            color: var(--text);
+            margin: 0 auto; flex-grow: 1;
+        }
+        .header { background: #111; color: white; padding: 15px; text-align: center; border-bottom: 5px solid var(--primary); display: flex; align-items: center; justify-content: center; gap: 15px; border-radius: 35px 35px 0 0; }
+        .profile-pic { width: 80px; height: 50px; border-radius: 8px; border: 2px solid #fff; object-fit: cover; }
+        
+        .main-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1.1fr; 
+            gap: 15px; 
+            padding: 15px; 
+            box-sizing: border-box; 
+            width: 100%;
+        }
+
+        /* Flex Responsiveness */
+        @media (max-width: 900px) { .app-container { width: 95%; } }
+        @media (max-width: 850px) { 
+            .main-grid { grid-template-columns: 1fr; display: flex; flex-direction: column; } 
+            .inputs-grid { gap: 10px; }
+        }
+        @media (max-width: 450px) {
+            .inputs-grid { grid-template-columns: 1fr 1fr; }
+            .inputs-grid div:last-child { grid-column: span 2; }
+            .header h1 { font-size: 1.2rem; }
+            .enter-btn { font-size: 16px; padding: 12px 30px; }
+        }
+
+        .info-card { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 20px; padding: 12px; margin: 5px; font-size: 11px; text-align: center; }
+        
+        .section-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--primary); margin-bottom: 12px; padding-bottom: 5px; }
+        .clear-circle { width: 35px; height: 35px; background: var(--red); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        .reset-btn { background: var(--red); color: white; border: none; padding: 14px; width: 95%; margin: 10px auto; border-radius: 15px; font-weight: bold; cursor: pointer; }
+
+        .card-list { display: flex; flex-direction: column; gap: 15px; flex: 1; }
+        .card { background: rgba(128,128,128,0.08); border-radius: 25px; padding: 18px; border: 1px solid rgba(128,128,128,0.1); display: flex; flex-direction: column; gap: 8px; position: relative; overflow: hidden;}
+        
+        .section-title { font-weight: 900; font-size: 18px; color: var(--primary); margin: 0; }
+        .card-label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; color: var(--blue); border-right: 4px solid var(--blue); padding-right: 10px; }
+        .inputs-grid { display: grid; grid-template-columns: 1fr 1fr 0.8fr; gap: 8px; width: 100%; box-sizing: border-box; }
+        .small-title { font-size: 9px; color: #777; font-weight: bold; text-align: center; display: block; margin-bottom: 2px; }
+        body.dark-mode .small-title { color: #aaa; }
+        
+        input { width: 100%; padding: 12px 2px; border: 1px solid #ccc; border-radius: 12px; font-size: 15px; text-align: center; font-weight: bold; outline: none; background: #fff; color: #000; box-sizing: border-box; }
+        .rate-in { background-color: #fffde7 !important; border: 2px solid var(--yellow) !important; color: #856404 !important; }
+        .amt-in { background-color: #e3f2fd !important; border: 1px solid var(--blue) !important; }
+        .worda-in { background-color: #fce4ec !important; border: 1px solid var(--red) !important; }
+
+        /* Dark Mode Input overrides */
+        body.dark-mode .rate-in { background-color: #333 !important; color: #f1c40f !important; border-color: #f1c40f !important; }
+        body.dark-mode .amt-in { background-color: #333 !important; color: #54a0ff !important; border-color: #54a0ff !important; }
+        body.dark-mode .worda-in { background-color: #333 !important; color: #ff7675 !important; border-color: #ff7675 !important; }
+
+        .result-box { margin-top: 10px; padding: 12px; border-radius: 15px; text-align: center; font-weight: 900; font-size: 20px; border: 2px solid var(--primary); background: #e8f5e9; color: #2e7d32; }
+        .word-output { margin-top: 6px; background: rgba(128,128,128,0.05); padding: 8px; border-radius: 10px; text-align: center; font-size: 11px; font-weight: bold; color: var(--text); min-height: 15px; }
+        body.dark-mode .word-output { background: rgba(255,255,255,0.1); color: #fff; }
+
+        .gold-expand { display: block; background: #fffef5; border: 2px solid var(--gold); border-radius: 20px; padding: 15px; }
+        body.dark-mode .gold-expand { background: #2c3e50; }
+        .gold-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dotted #ddd; font-weight: bold; font-size: 13px; }
+        .gold-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+        .gold-table th { background: var(--gold); color: white; padding: 5px; border-radius: 5px; }
+        .gold-table td { padding: 8px 4px; border-bottom: 1px solid #eee; text-align: center; font-weight: bold; }
+
+        .counter-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 5px; background: white; border-radius: 12px; border: 1px solid #eee; }
+        body.dark-mode .counter-row { background: #2c3e50; border-color: #444; }
+        .note-tag { width: 95px; padding: 8px; border-radius: 10px; color: white; text-align: center; font-size: 11px; font-weight: bold; flex-shrink: 0; }
+        
+        .footer { text-align: center; padding: 25px; font-size: 11px; background: #111; color: #888; border-radius: 0 0 35px 35px; }
+
+        .new-card-added { animation: fadeIn 0.8s ease-in-out; border-right-width: 6px !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 3D CLICK ANIMATION STYLE --- */
+        .click-effect-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 99999; overflow: hidden;
+        }
+        .click-particle {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--gold); z-index: 99999;
+        }
+        .click-shockwave {
+            position: absolute; border: 2px solid var(--gold); border-radius: 50%;
+            transform: translate(-50%, -50%) rotateX(60deg);
+            background: rgba(212, 175, 55, 0.2); pointer-events: none;
+            animation: shockwaveAnim 0.8s ease-out forwards; z-index: 99998;
+        }
+        @keyframes shockwaveAnim {
+            0% { width: 0; height: 0; opacity: 1; border-width: 5px; }
+            100% { width: 150px; height: 150px; opacity: 0; border-width: 0px; }
+        }
+        @keyframes particleFade {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Entrance -->
+<div class="splash-screen" id="splashScreen">
+    <div class="enter-btn-wrapper">
+        <button class="enter-btn" id="enterBtnTxt" onclick="enterApp()">چوونە ژوورەوە</button>
+    </div>
+    <div style="margin-top:20px; color:#d4af37; font-size:12px;" id="splashTitle">وێبی دراوزانی شاهانە</div>
+</div>
+
+<div class="moving-border"></div>
+<div class="moving-border-bottom"></div>
+
+<!-- Click Effects Container -->
+<div id="clickEffects" class="click-effect-container"></div>
+
+<!-- Main Content -->
+<div id="mainContent">
+
+    <button class="open-btn" onclick="toggleNav()">☰</button>
+
+    <!-- Sidebar -->
+    <div id="mySidebar" class="sidebar">
+        <div class="sidebar-header">
+            <h2 style="margin:0;" id="sbTitle">DASHBOARD</h2>
+            <button class="back-btn" onclick="toggleNav()">➡️</button>
+        </div>
+        <hr style="border-color: rgba(212, 175, 55, 0.3); margin: 0 15px;">
+        <a href="#" onclick="toggleDarkMode()" id="menuDarkMode">🌙 دۆخ (Dark Mode)</a>
+        <a href="#" onclick="openModal('newsModal')" id="menuKurdishNews">📰 هەواڵی بۆرسەی کوردی</a>
+        <a href="#" onclick="openModal('dollarModal')" id="menuMarket">📈 شیکاری بۆرسە</a>
+        <a href="#" onclick="openModal('oilModal')" id="menuOil">🛢️ شیکاری نەوت</a>
+        <a href="#" onclick="openModal('newsModal')" id="menuNews">📰 هەواڵی بۆرسەی جیهانی</a>
+        <a href="#" onclick="openModal('settingsModal')" id="menuSettings">⚙️ ڕێکخستنەکان</a>
+        <a href="#" onclick="openModal('silverModal')" id="menuSilver">🥈 بازاڕی زێو و Ms</a>
+
+        <div class="feedback-box">
+            <div class="feedback-title" id="fbTitle">سەرنج و پێشنیارەکانتان</div>
+            <div style="font-size:12px; color:#bdc3c7;" id="fbDesc">تکایە هەر سەرنجێکتان هەیە بۆ ئەم ئیمێڵەی بنێرن:</div>
+            <div class="feedback-email">mhamadtariq03@gmail.com</div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="silverModal" class="modal-overlay">
+        <div class="modal-box" style="max-width: 600px;">
+            <span class="close-modal" onclick="closeAllModals()">&times;</span>
+            <h2 style="color: #d4af37; text-align: center;" id="slvTitle">🥈 شیکاری و نرخی زێو (Silver)</h2>
+            <div class="silver-prices" style="display: flex; justify-content: space-around; background: #f1f1f1; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div class="price-item"><b id="slvOzLabel">ئۆنسەی زێو:</b> <span id="silverOunceDisplay" style="color: #2ecc71;">--</span></div>
+                <div class="price-item"><b id="slvKgLabel">کیلۆی زێو:</b> <span id="silverKilo" style="color: #2ecc71;">--</span></div>
+            </div>
+            <div class="calculator-box" style="background: #001f3f; color: white; padding: 20px; border-radius: 15px; border: 2px solid #d4af37;">
+                <h4 style="text-align: center; color: #d4af37;" id="slvCalcTitle">🧮 حاسیبەی کڕین و فرۆشتن</h4>
+                <div style="margin-bottom: 10px;">
+                    <label id="slvWeightLabel">کێش بە (گرام):</label>
+                    <input type="number" id="silverWeight" placeholder="0.00" style="width: 100%; padding: 8px; border-radius: 5px;">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div><label id="slvBuyLabel">کڕین ($):</label><input type="number" id="silverBuyPrice" placeholder="$" style="width: 100%; padding: 8px; border-radius: 5px;"></div>
+                    <div><label id="slvSellLabel">فرۆشتن ($):</label><input type="number" id="silverSellPrice" placeholder="$" style="width: 100%; padding: 8px; border-radius: 5px;"></div>
+                </div>
+                <button onclick="calculateSilver()" style="width: 100%; margin-top: 15px; background: #d4af37; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold;" id="slvCalcBtn">هەژمارکردن</button>
+                <div id="silverResult" style="margin-top: 15px; text-align: center; font-weight: bold; color: #d4af37;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="dollarModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeAllModals()">&times;</span>
+            <h3 id="chartDollarTitle">📈 شیکاری ساڵانەی دۆلار</h3>
+            <canvas id="dollarChartCanvas"></canvas>
+        </div>
+    </div>
+
+    <div id="oilModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeAllModals()">&times;</span>
+            <h3 id="chartOilTitle">🛢️ شیکاری نەوتی جیهانی</h3>
+            <canvas id="oilChartCanvas"></canvas>
+        </div>
+    </div>
+
+    <div id="newsModal" class="modal-overlay">
+        <div class="modal-box news-modal-box">
+            <span class="close-modal" onclick="closeAllModals()">&times;</span>
+            <div class="news-header-area">
+                <h3 id="newsTitle">📰 هەواڵی بۆرسەی جیهانی - ڕاستەوخۆ</h3>
+                <button id="newsRefreshBtn" onclick="fetchLiveNews()" style="background:#2ecc71; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">نوێکردنەوە 🔄</button>
+            </div>
+            <div id="liveNewsContainer" class="news-list-container">
+                <div class="loading-spinner">چاوەڕوان بە... ⏳</div>
+            </div>
+            <p style="font-size:10px; color:gray; text-align:center; margin-top:10px;">سەرچاوە: Investing.com API</p>
+        </div>
+    </div>
+
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal-box">
+            <span class="close-modal" onclick="closeAllModals()">&times;</span>
+            <h3 id="setHead">⚙️ ڕێکخستنی سیستەم</h3>
+            <label id="setLangLabel">گۆڕینی زمان (Language):</label>
+            <select id="langSel" onchange="updateLang()" style="width:100%; padding:10px; margin:10px 0;">
+                <option value="ku">کوردی</option>
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+            </select>
+            <hr>
+            <div style="margin:10px 0;"><input type="checkbox" id="blurCheck" onchange="applyBlur()"> <span id="setBlur">چالاککردنی Blur</span></div>
+            <hr>
+            <div style="font-size:13px; color:#333;">
+                <p><b id="devLabel">گەشەپێدەر:</b> محمد تاریق عارف</p>
+                <p id="devInfo">دەرچووی بەشی گەشتوگوزار لە زانکۆی سلێمانی</p>
+                <p>📧 mhamadtariq03@gmail.com</p>
+                <p>📞 +9647509525751</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMOOTH BREAKING NEWS TICKER (SAMSUNG STYLE) - FIXED FOR ALL LANGUAGES -->
+    <div class="ticker-wrap">
+        <div class="ticker-label">🔴 هەواڵی بەپەلە</div>
+        <div class="ticker-move" id="breakingNewsContainer">
+            <!-- News items inserted via JS -->
+            بارکردنی هەواڵەکان...
+        </div>
+    </div>
+
+    <div id="mainWrapper" class="overlay-div">
+        <div class="app-container">
+            <div class="header">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/Flag_of_Kurdistan.svg" class="profile-pic" alt="Kurdistan Flag">
+                <div class="header-text">
+                    <h1 id="appHeaderTitle">💵 وێبی دراوزانی و بۆرسە </h1>
+                    <div style="color: var(--primary); font-size: 13px; font-weight: bold;" id="appHeaderSub">دیزاین و گەشەپێدان: محمد تاریق عارف ٢٠٢٦</div>
+                </div>
+            </div>
+
+            <div class="info-card" id="infoCardTxt">
+                📢 <b>ڕێنمایی:</b> بۆ ئەوەی ئەپەکە بە باشی کاربکات، تکایە بۆ ئایفۆن لە ڕێگەی <b>Safari</b> و بۆ ئەندرۆید لە ڕێگەی <b>Chrome</b> بیکەرەوە.
+            </div>
+
+            <div class="main-grid">
+                <div class="card-list">
+                    <div class="section-header">
+                        <span class="section-title" id="secTitle1">📊 ئاڵوگۆڕی دراوی زیرەک</span>
+                        <button class="clear-circle" onclick="clearCurrencyInputs()" title="Clean">🧹</button>
+                    </div>
+
+                    <div class="card"><span class="card-label" id="lblUSD">🇺🇸 دۆلاری ئەمریکی ($)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠$</span><input type="number" id="rUSD" class="rate-in" value="149850" oninput="syncAll()"></div><div><span class="small-title t-amount">بڕی دۆلار</span><input type="number" id="aUSD" class="amt-in cust-in" placeholder="0" oninput="calc('USD')"></div><div><span class="small-title t-change">وردە (دینار)</span><input type="number" id="wUSD" class="worda-in cust-in" placeholder="0" oninput="calc('USD')"></div></div><div id="resUSD" class="result-box">٠</div><div id="wordUSD" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblEUR">🇪🇺 یۆرۆی ئەوروپی (€)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠€</span><input type="number" id="rEUR" class="rate-in" value="162540" oninput="calc('EUR')"></div><div><span class="small-title t-amount">بڕی یۆرۆ</span><input type="number" id="aEUR" class="amt-in cust-in" placeholder="0" oninput="calc('EUR')"></div><div><span class="small-title t-change">وردە (دینار)</span><input type="number" id="wEUR" class="worda-in cust-in" placeholder="0" oninput="calc('EUR')"></div></div><div id="resEUR" class="result-box">٠</div><div id="wordEUR" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblGBP">🇬🇧 پاوەنی بەریتانی (£)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠£</span><input type="number" id="rGBP" class="rate-in" value="191130" oninput="calc('GBP')"></div><div><span class="small-title t-amount">بڕی پاوەن</span><input type="number" id="aGBP" class="amt-in cust-in" placeholder="0" oninput="calc('GBP')"></div><div><span class="small-title t-change">وردە (دینار)</span><input type="number" id="wGBP" class="worda-in cust-in" placeholder="0" oninput="calc('GBP')"></div></div><div id="resGBP" class="result-box">٠</div><div id="wordGBP" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblTMN">🇮🇷 تمەنی ئێرانی (ملیۆن)</span><div class="inputs-grid"><div><span class="small-title t-rateM">نرخی ١ م</span><input type="number" id="rTMN" class="rate-in" value="11750" oninput="calc('TMN')"></div><div><span class="small-title t-amountM">بڕی م</span><input type="number" id="aTMN" class="amt-in cust-in" placeholder="0" oninput="calc('TMN')"></div><div><span class="small-title t-changeM">وردە (د)</span><input type="number" id="wTMN" class="worda-in cust-in" placeholder="0" oninput="calc('TMN')"></div></div><div id="resTMN" class="result-box">٠</div><div id="wordTMN" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblTRY">🇹🇷 لیرەی تورکی (TRY)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠₺</span><input type="number" id="rTRY" class="rate-in" value="4450" oninput="calc('TRY')"></div><div><span class="small-title t-amount">بڕی لیرە</span><input type="number" id="aTRY" class="amt-in cust-in" placeholder="0" oninput="calc('TRY')"></div><div><span class="small-title t-change">وردە (د)</span><input type="number" id="wTRY" class="worda-in cust-in" placeholder="0" oninput="calc('TRY')"></div></div><div id="resTRY" class="result-box">٠</div><div id="wordTRY" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblSEK">🇸🇪 کڕۆنی سویدی (SEK)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠kr</span><input type="number" id="rSEK" class="rate-in" value="14120" oninput="calc('SEK')"></div><div><span class="small-title t-amount">بڕی kr</span><input type="number" id="aSEK" class="amt-in cust-in" placeholder="0" oninput="calc('SEK')"></div><div><span class="small-title t-change">وردە (د)</span><input type="number" id="wSEK" class="worda-in cust-in" placeholder="0" oninput="calc('SEK')"></div></div><div id="resSEK" class="result-box">٠</div><div id="wordSEK" class="word-output"></div></div>
+
+                    <div class="card"><span class="card-label" id="lblNOK">🇳🇴 کرۆنی نەرویجی (NOK)</span><div class="inputs-grid"><div><span class="small-title t-rate">نرخی ١٠٠kr</span><input type="number" id="rNOK" class="rate-in" value="13850" oninput="calc('NOK')"></div><div><span class="small-title t-amount">بڕی kr</span><input type="number" id="aNOK" class="amt-in cust-in" placeholder="0" oninput="calc('NOK')"></div><div><span class="small-title t-change">وردە (د)</span><input type="number" id="wNOK" class="worda-in cust-in" placeholder="0" oninput="calc('NOK')"></div></div><div id="resNOK" class="result-box">٠</div><div id="wordNOK" class="word-output"></div></div>
+
+                    <div class="card" style="border: 3px solid var(--red);"><span class="card-label" style="color:var(--red);" id="lblSell">🔄 فرۆشتنی دۆلار (دینار بۆ $)</span><div class="inputs-grid"><div><span class="small-title" id="t-sellRate">نرخی فرۆشتن</span><input type="number" id="rSell" class="rate-in" value="150100" oninput="calc('Sell')"></div><div><span class="small-title" id="t-sellAmt">بڕی دینار</span><input type="number" id="aSell" class="amt-in cust-in" placeholder="0" oninput="calc('Sell')"></div><div><span class="small-title" id="t-sellCent">سەنت</span><input type="number" id="wSell" class="worda-in cust-in" placeholder="0" oninput="calc('Sell')"></div></div><div id="resSell" class="result-box" style="background:#e3f2fd; color:var(--blue); border-color:var(--blue);">٠.٠٠ $</div><div id="wordSell" class="word-output"></div></div>
+                </div>
+
+                <div class="card-list">
+                    <div class="section-header"><span class="section-title" id="secTitle2">🏆 بۆرسەی جیهانی (API)</span></div>
+                    <div id="goldArea" class="gold-expand" style="display:block; border-radius: 25px;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                            <div style="flex:1;"><span class="small-title" id="t-ozGold">ئۆنسە زێڕ ($)</span><input type="number" id="goldOunce" value="2850" oninput="calcGold()"></div>
+                            <div style="flex:1;"><span class="small-title" id="t-ozSilver">ئۆنسە زیو ($)</span><input type="number" id="silverOunce" value="31" oninput="calcGold()"></div>
+                        </div>
+                        <div id="goldRes"></div>
+                        <button onclick="fetchGoldPrice()" style="width:100%; margin-top:5px; padding:5px; font-size:10px; border-radius:10px; cursor:pointer;" id="btnRefreshGold">تازەکردنەوە 🔄</button>
+                    </div>
+
+                    <!-- بەشی نوێ: حاسیبەی عمولەی شەفاف (Injected professionally) -->
+                    <div class="card new-card-added" style="border: 3px solid var(--primary); margin-top: 5px;">
+                        <span class="card-label" style="color:var(--primary); border-right-color:var(--primary);">💎 حاسیبەی عمولەی شەفاف (بۆ کڕیار)</span>
+                        <div>
+                            <span class="small-title">بڕی پارەی کڕیار (دینار)</span>
+                            <input type="number" id="moneyInputComm" placeholder="بڕی پارە بنوسە..." oninput="calculateCommission()" 
+                                   class="amt-in" style="width: 100%; font-size: 20px; height: 50px; border-color: var(--primary) !important;">
+                        </div>
+                        <div class="inputs-grid" style="grid-template-columns: 1fr 1fr; margin-top: 5px;">
+                            <div>
+                                <span class="small-title">ڕێژەی عمولە</span>
+                                <select id="commRateSel" onchange="calculateCommission()" style="width: 100%; padding: 10px; border-radius: 12px; border: 1px solid var(--gold); font-weight: bold; background: var(--input-bg); color: var(--input-text);">
+                                    <option value="0.004">0.4% (وەک فاستپەی)</option>
+                                    <option value="0.005">0.5% (نیو سەدەیی)</option>
+                                    <option value="0.01">1% (یەک سەدەیی)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <span class="small-title">دابەشکردن</span>
+                                <select id="commDivider" onchange="calculateCommission()" style="width: 100%; padding: 10px; border-radius: 12px; border: 1px solid var(--blue); font-weight: bold; background: var(--input-bg); color: var(--input-text);">
+                                    <option value="1">بەبێ دابەش</option>
+                                    <option value="3">دابەش ٣ (شەریک)</option>
+                                    <option value="2">دابەش ٢ (نیوە)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="commExplanation" style="margin-top: 8px; padding: 8px; background: rgba(52, 152, 219, 0.1); border-radius: 10px; font-size: 11px; text-align: center; color: var(--blue); font-weight: bold;">
+                            بۆ هەر ١٠٠ هەزار دینار، بڕی ٤٠٠ دینار عمولەیە.
+                        </div>
+                        <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 5px;">
+                            <div class="result-box" style="font-size: 15px; background: #fffde7; border-color: var(--gold); color: #856404; display: flex; justify-content: space-between; padding: 10px;">
+                                <span>بڕی عمولە:</span>
+                                <span id="commResVal">٠ د.ع</span>
+                            </div>
+                            <div class="result-box" style="font-size: 15px; background: #e8f5e9; border-color: var(--primary); color: #2e7d32; display: flex; justify-content: space-between; padding: 10px;">
+                                <span>پارەی ماوەوە:</span>
+                                <span id="netResVal">٠ د.ع</span>
+                            </div>
+                            <div id="sharedCommRow" class="result-box" style="font-size: 15px; background: #e3f2fd; border-color: var(--blue); color: #0d47a1; display: none; justify-content: space-between; padding: 10px;">
+                                <span>پشکی هاوبەش:</span>
+                                <span id="sharedResVal">٠ د.ع</span>
+                            </div>
+                        </div>
+                        <div id="wordCommResult" class="word-output" style="color: var(--primary); font-size: 10px;"></div>
+                    </div>
+
+                    <div class="section-header"><span class="section-title" id="secTitle3">🧮 ئامێری ژماردن</span></div>
+                    <div class="card">
+                        <select id="cntCur" class="counter-select" onchange="updateCounterUI()" style="width:100%; padding:10px; border-radius:10px; margin-bottom:10px; font-weight:bold;">
+                            <option value="IQD">🇮🇶 IQD</option>
+                            <option value="USD">🇺🇸 USD</option>
+                            <option value="GBP">🇬🇧 GBP</option>
+                            <option value="NOK">🇳🇴 NOK</option>
+                            <option value="TMN">🇮🇷 TMN</option>
+                            <option value="EUR">🇪🇺 EUR</option>
+                            <option value="TRY">🇹🇷 TRY</option>
+                        </select>
+                        <div id="cntFields"></div>
+                        <div id="cntTotal" class="result-box" style="background:#111; color:var(--primary); font-size: 24px; border:none;">...</div>
+                        <div id="cntWordTotal" class="word-output" style="background: rgba(46, 204, 113, 0.1); margin-top: 5px;"></div>
+                        <div style="background: rgba(0,0,0,0.05); padding: 10px; border-radius: 15px; margin-top: 10px;">
+                            <span id="iqdEq" style="font-size:14px; color:var(--orange); font-weight:bold; display:block; text-align:center;">...</span>
+                        </div>
+                        <button class="reset-btn" onclick="resetCounterOnly()" id="btnResetCnt">♻️ سڕینەوەی ئامێر</button>
+                    </div>
+
+                    <div class="section-header"><span class="section-title" id="secTitle4">✨ نرخ و زانیاری زێڕ</span></div>
+                    <div class="card new-card-added" style="border-right-color: var(--gold);">
+                        <span class="card-label" style="color:var(--gold); border-right-color:var(--gold);" id="lblGoldCalc">⚖️ حاسیبەی کڕین و فرۆشتنی زێڕ</span>
+                        <div class="inputs-grid">
+                            <div><span class="small-title" id="t-gWeight">کێش (میسقاڵ)</span><input type="number" id="gWeight" class="amt-in" placeholder="0" oninput="calcCustomGold()"></div>
+                            <div><span class="small-title" id="t-gPrice">نرخی میسقاڵ</span><input type="number" id="gPrice" class="rate-in" placeholder="0" oninput="calcCustomGold()"></div>
+                            <div><span class="small-title" id="t-gLabor">کرێ (بۆ میسقاڵ)</span><input type="number" id="gLabor" class="worda-in" placeholder="0" oninput="calcCustomGold()"></div>
+                        </div>
+                        <div id="resCustomGold" class="result-box" style="background:#fffef5; color:#d4af37; border-color:var(--gold);">٠</div>
+                        <div id="wordCustomGold" class="word-output"></div>
+                    </div>
+
+                    <div class="card new-card-added" style="border-right-color: var(--blue);">
+                        <span class="card-label" style="color:var(--blue); border-right-color:var(--blue);" id="lblGoldTable">📈 نرخی عەیارەکانی زێڕ (ئێستا)</span>
+                        <div id="detailedGoldPrices"></div>
+                        <div class="info-card" style="margin-top: 10px; background: #e3f2fd; color: #0d47a1; border-color: #bbdefb;"><b id="noteGoldTitle">تێبینی گرنگ:</b> <span id="noteGoldDesc">نرخەکان لەسەر بنەمای ئۆنسەی جیهانی و نرخی ئێستای دۆلار حیساب کراون.</span></div>
+                    </div>
+
+                    <div class="card new-card-added" style="border-right-color: #de2110 !important;">
+                        <span class="card-label" style="color:#de2110; border-right-color:#de2110;" id="lblCNY">🇨🇳 یوانی چینی (CNY)</span>
+                        <div class="inputs-grid">
+                            <div><span class="small-title" id="t-yRate">نرخی ١ یوان</span><input type="text" id="yRateDisp" class="rate-in" value="208" readonly style="background:#fff5f5; color:#de2110;"></div>
+                            <div><span class="small-title" id="t-yAmt">بڕی یوان</span><input type="number" id="aYuan" class="amt-in cust-in" placeholder="0" oninput="calcYuan()"></div>
+                            <div><span class="small-title" id="t-yChange">وردە (دینار)</span><input type="number" id="wYuan" class="worda-in cust-in" placeholder="0" oninput="calcYuan()"></div>
+                        </div>
+                        <div id="resYuan" class="result-box" style="background:#fff5f5; color:#de2110; border-color:#de2110;">٠</div>
+                        <div id="wordYuan" class="word-output" style="color:#de2110; font-size: 10px;">--</div>
+                    </div>
+                    
+            <div class="footer" id="footerTxt">هەموو مافەکان پارێزراون بۆ <b>محمد تاریق عارف</b> ٢٠٢٦ ©</div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- هەموو تەرجەمە و لۆجیکە ئەسڵییەکەت لێرەوە دەستپێدەکاتەوە ---
+const translations = {
+    ku: {
+        splashBtn: "چوونە ژوورەوە", splashTitle: "وێبی دراوزانی شاهانە", sbTitle: "DASHBOARD",
+        menuMarket: "📈 شیکاری بۆرسە", menuOil: "🛢️ شیکاری نەوت", menuNews: "📰 هەواڵی بۆرسەی جیهانی", menuSettings: "⚙️ ڕێکخستنەکان", menuSilver: "🥈 بازاڕی زێو و Ms",
+        fbTitle: "سەرنج و پێشنیارەکانتان", fbDesc: "تکایە هەر سەرنجێکتان هەیە بۆ ئەم ئیمێڵەی بنێرن:",
+        appTitle: "💵 وێبی دراوزانی و بۆرسە", appSub: "دیزاین و گەشەپێدان: محمد تاریق عارف ٢٠٢٦",
+        infoTxt: "📢 <b>ڕێنمایی:</b> بۆ ئەوەی ئەپەکە بە باشی کاربکات، تکایە بۆ ئایفۆن لە ڕێگەی <b>Safari</b> و بۆ ئەندرۆید لە ڕێگەی <b>Chrome</b> بیکەرەوە. ",
+        secTitle1: "📊 ئاڵوگۆڕی دراوی زیرەک", secTitle2: "🏆 بۆرسەی جیهانی (API)", secTitle3: "🧮 ئامێری ژماردن", secTitle4: "✨ نرخ و زانیاری زێڕ",
+        ticker: "نرخەکان", lblUSD: "🇺🇸 دۆلاری ئەمریکی ($)", lblEUR: "🇪🇺 یۆرۆی ئەوروپی (€)", lblGBP: "🇬🇧 پاوەنی بەریتانی (£)", 
+        lblTMN: "🇮🇷 تمەنی ئێرانی (ملیۆن)", lblTRY: "🇹🇷 لیرەی تورکی (TRY)", lblSEK: "🇸🇪 کڕۆنی سویدی (SEK)", 
+        lblNOK: "🇳🇴 کرۆنی نەرویجی (NOK)", lblSell: "🔄 فرۆشتنی دۆلار (دینار بۆ $)", lblGoldCalc: "⚖️ حاسیبەی کڕین و فرۆشتنی زێڕ",
+        lblGoldTable: "📈 نرخی عەیارەکانی زێڕ (ئێستا)", lblCNY: "🇨🇳 یوانی چینی (CNY)",
+        tRate: "نرخی ١٠٠", tAmt: "بڕی دراو", tChange: "وردە (دینار)", tRateM: "نرخی ١ م", tAmtM: "بڕی م", tChangeM: "وردە (د)",
+        tSellRate: "نرخی فرۆشتن", tSellAmt: "بڕی دینار", tSellCent: "سەنت",
+        tOzGold: "ئۆنسە زێڕ ($)", tOzSilver: "ئۆنسە زیو ($)", btnRef: "تازەکردنەوە 🔄", btnReset: "♻️ سڕینەوەی ئامێر",
+        tgWeight: "کێش (میسقاڵ)", tgPrice: "نرخی میسقاڵ", tgLabor: "کرێ (بۆ میسقاڵ)",
+        tyRate: "نرخی ١ یوان", tyAmt: "بڕی یوان", tyChange: "وردە (دینار)",
+        noteGTitle: "تێبینی گرنگ:", noteGDesc: "نرخەکان لەسەر بنەمای ئۆنسەی جیهانی و نرخی ئێستای دۆلار حیساب کراون.",
+        setHead: "⚙️ ڕێکخستنی سیستەم", setLang: "گۆڕینی زمان (Language):", setBlur: "تەرخانکردنی Blur", 
+        devLbl: "گەشەپێدەر:", devInf: "دەرچووی بەشی گەشتوگوزار لە زانکۆی سلێمانی",
+        footer: "هەموو مافەکان پارێزراون بۆ <b>محمد تاریق عارف</b> ٢٠٢٦ ©",
+        slvTitle: "🥈 شیکاری و نرخی زێو", slvOz: "ئۆنسەی زێو:", slvKg: "کیلۆی زێو:", slvHead: "🧮 حاسیبەی کڕین و فرۆشتن",
+        slvW: "کێش بە (گرام):", slvB: "کڕین ($):", slvS: "فرۆشتن ($):", slvBtn: "هەژمارکردن",
+        chartD: "📈 شیکاری ساڵانەی دۆلار", chartO: "🛢️ شیکاری نەوتی جیهانی",
+        newsHead: "📰 هەواڵی بۆرسەی جیهانی", newsBtn: "نوێکردنەوە 🔄", newsWait: "چاوەڕوان بە... ⏳", newsErr: "کێشە هەیە!"
+    },
+    ar: {
+        splashBtn: "دخول", splashTitle: "بورصة العملات الملكية", sbTitle: "لوحة التحكم",
+        menuMarket: "📈 تحليل السوق", menuOil: "🛢️ تحليل النفط", menuNews: "📰 أخبار البورصة", menuSettings: "⚙️ الإعدادات", menuSilver: "🥈 سوق الفضة",
+        fbTitle: "ملاحظاتكم واقتراحاتكم", fbDesc: "يرجى إرسال أي ملاحظات إلى هذا البريد:",
+        appTitle: "💵 العملات والبورصة", appSub: "تصميم وتطوير: محمد طارق عارف ٢٠٢٦",
+        infoTxt: "📢 <b>تنبيه:</b> لضمان أفضل أداء، استخدم <b>Safari</b> للآيفون و <b>Chrome</b> للأندرويد.",
+        secTitle1: "📊 تحويل العملات الذكي", secTitle2: "🏆 البورصة العالمية (API)", secTitle3: "🧮 الآلة الحاسبة", secTitle4: "✨ أسعار الذهب",
+        ticker: "الأسعار", lblUSD: "🇺🇸 الدولار الأمريكي ($)", lblEUR: "🇪🇺 اليورو الأوروبي (€)", lblGBP: "🇬بيه الجنيه الإسترليني (£)", 
+        lblTMN: "🇮🇷 التومان الإيراني (مليون)", lblTRY: "🇹🇷 الليرة التركية (TRY)", lblSEK: "🇸🇪 الكرون السويدي (SEK)", 
+        lblNOK: "🇳🇴 الكرون النرويجي (NOK)", lblSell: "🔄 بيع الدولار (دينار -> $)", lblGoldCalc: "⚖️ حاسبة الذهب (بيع/شراء)",
+        lblGoldTable: "📈 أسعار الذهب حسب العيار", lblCNY: "🇨🇳 اليوان الصيني (CNY)",
+        tRate: "سعر ١٠٠", tAmt: "المبلغ", tChange: "فكة (دينار)", tRateM: "سعر ١ م", tAmtM: "مبلغ (م)", tChangeM: "فكة (د)",
+        tSellRate: "سعر البيع", tSellAmt: "مبلغ الدينار", tSellCent: "سنت",
+        tOzGold: "أونصة الذهب ($)", tOzSilver: "أونصة الفضة ($)", btnRef: "تحديث 🔄", btnReset: "♻️ تصفير الآلة",
+        tgWeight: "الوزن (مثقال)", tgPrice: "سعر المثقال", tgLabor: "الأجور (للمثقال)",
+        tyRate: "سعر ١ يوان", tyAmt: "مبلغ اليوان", tyChange: "فكة (دينار)",
+        noteGTitle: "ملاحظة هامة:", noteGDesc: "الأسعار محسوبة بناءً على الأونصة العالمية وسعر الدولار الحالي.",
+        setHead: "⚙️ إعدادات النظام", setLang: "تغيير اللغة (Language):", setBlur: "تفعيل التغبيش (Blur)", 
+        devLbl: "المطور:", devInf: "خريج قسم السياحة - جامعة السليمانية",
+        footer: "جميع الحقوق محفوظة لـ <b>محمد طارق عارف</b> ٢٠٢٦ ©",
+        slvTitle: "🥈 تحليل وأسعار الفضة", slvOz: "أونصة الفضة:", slvKg: "كيلو الفضة:", slvHead: "🧮 حاسبة البيع والشراء",
+        slvW: "الوزن (غرام):", slvB: "شراء ($):", slvS: "بيع ($):", slvBtn: "حساب",
+        chartD: "📈 تحليل الدولار السنوي", chartO: "🛢️ تحليل النفط العالمي",
+        newsHead: "📰 أخبار البورصة العالمية", newsBtn: "تحديث 🔄", newsWait: "يرجى الانتظار... ⏳", newsErr: "حدث خطأ!"
+    },
+    en: {
+        splashBtn: "Enter", splashTitle: "Royal Currency Web", sbTitle: "DASHBOARD",
+        menuMarket: "📈 Market Analysis", menuOil: "🛢️ Oil Analysis", menuNews: "📰 Market News", menuSettings: "⚙️ Settings", menuSilver: "🥈 Silver Market",
+        fbTitle: "Feedback & Suggestions", fbDesc: "Please send any feedback to this email:",
+        appTitle: "💵 Currency & Stock Web", appSub: "Designed & Developed by: Mhamad Tariq Arif 2026",
+        infoTxt: "📢 <b>Note:</b> For best performance, please use <b>Safari</b> on iPhone and <b>Chrome</b> on Android.",
+        secTitle1: "📊 Smart Currency Exchange", secTitle2: "🏆 Global Market (API)", secTitle3: "🧮 Calculator", secTitle4: "✨ Gold Prices & Info",
+        ticker: "Prices", lblUSD: "🇺🇸 US Dollar ($)", lblEUR: "🇪🇺 Euro (€)", lblGBP: "🇬🇧 British Pound (£)", 
+        lblTMN: "🇮🇷 Iranian Toman (Million)", lblTRY: "🇹🇷 Turkish Lira (TRY)", lblSEK: "🇸🇪 Swedish Krona (SEK)", 
+        lblNOK: "🇳🇴 Norwegian Krone (NOK)", lblSell: "🔄 Sell Dollar (IQD -> $)", lblGoldCalc: "⚖️ Gold Calculator",
+        lblGoldTable: "📈 Gold Prices by Karat", lblCNY: "🇨🇳 Chinese Yuan (CNY)",
+        tRate: "Rate 100", tAmt: "Amount", tChange: "Change (IQD)", tRateM: "Rate 1M", tAmtM: "Amount (M)", tChangeM: "Change",
+        tSellRate: "Sell Rate", tSellAmt: "IQD Amount", tSellCent: "Cents",
+        tOzGold: "Gold Oz ($)", tOzSilver: "Silver Oz ($)", btnRef: "Refresh 🔄", btnReset: "♻️ Reset Counter",
+        tgWeight: "Weight (Misqal)", tgPrice: "Price/Misqal", tgLabor: "Labor/Misqal",
+        tyRate: "Rate 1 CNY", tyAmt: "CNY Amount", tyChange: "Change (IQD)",
+        noteGTitle: "Important:", noteGDesc: "Prices based on Global Ounce & current Dollar rate.",
+        setHead: "⚙️ System Settings", setLang: "Change Language:", setBlur: "Enable Blur", 
+        devLbl: "Developer:", devInf: "Tourism Graduate - University of Sulaymaniyah",
+        footer: "All rights reserved to <b>Mhamad Tariq Arif</b> 2026 ©",
+        slvTitle: "🥈 Silver Analysis & Price", slvOz: "Silver Oz:", slvKg: "Silver Kilo:", slvHead: "🧮 Buy/Sell Calculator",
+        slvW: "Weight (g):", slvB: "Buy ($):", slvS: "Sell ($):", slvBtn: "Calculate",
+        chartD: "📈 Annual Dollar Analysis", chartO: "🛢️ Global Oil Analysis",
+        newsHead: "📰 Global Market News", newsBtn: "Refresh 🔄", newsWait: "Please wait... ⏳", newsErr: "Error!"
+    }
+};
+
+const newsDict = {
+    "Market": { ku: "بازاڕ", ar: "سوق" }, "Economy": { ku: "ئابووری", ar: "اقتصاد" },
+    "Price": { ku: "نرخ", ar: "سعر" }, "Rate": { ku: "ڕێژە", ar: "معدل" },
+    "Rise": { ku: "بەرزبوونەوە", ar: "ارتفاع" }, "Fall": { ku: "دابەزین", ar: "انخفاض" },
+    "Drop": { ku: "دابەزین", ar: "هبوط" }, "Jump": { ku: "بازدان", ar: "قفزة" },
+    "Gain": { ku: "قازانج", ar: "مكسب" }, "Loss": { ku: "زيان", ar: "خسارة" },
+    "High": { ku: "بەرز", ar: "مرتفع" }, "Low": { ku: "نزم", ar: "منخفض" },
+    "Close": { ku: "داخستن", ar: "إغلاق" }, "Open": { ku: "کردنەوە", ar: "افتتاح" },
+    "Gold": { ku: "زێڕ", ar: "ذهب" }, "Silver": { ku: "زێو", ar: "فضة" },
+    "Oil": { ku: "نەوت", ar: "نفط" }, "Brent": { ku: "برێنت", ar: "برنت" },
+    "Dollar": { ku: "دۆلار", ar: "دولار" }, "USD": { ku: "دۆلار", ar: "دولار" },
+    "Euro": { ku: "یۆرۆ", ar: "يورو" }, "Bitcoin": { ku: "بیتکۆین", ar: "بيتكوين" },
+    "Stocks": { ku: "پشک", ar: "أسهم" }, "Futures": { ku: "گرێبەستەکان", ar: "عقود آجلة" },
+    "Stock": { ku: "بۆرسە", ar: "بورصة" },
+    "Forecast": { ku: "پێشبینی", ar: "توقعات" }, "Data": { ku: "داتا", ar: "بيانات" },
+    "Report": { ku: "راپۆرت", ar: "تقرير" }, "Inflation": { ku: "هەڵاوسان", ar: "تضخم" },
+    "Fed": { ku: "فیدڕاڵی", ar: "الفيدرالي" }, "Bank": { ku: "بانک", ar: "بنك" },
+    "Wall Street": { ku: "وۆڵ ستریت", ar: "وول ستريت" }, "Global": { ku: "جیهانی", ar: "عالمي" }
+};
+
+function enterApp() {
+    const splash = document.getElementById('splashScreen');
+    const content = document.getElementById('mainContent');
+    splash.style.transition = "opacity 0.8s";
+    splash.style.opacity = "0";
+    setTimeout(() => { splash.style.display = "none"; }, 800);
+    content.style.display = "block";
+    document.querySelector('.app-container').classList.add('animate-in');
+    
+    startTelegramService(); 
+}
+
+/* =========================================
+   TELEGRAM NEWS INTEGRATION
+   ========================================= */
+let telegramNewsItems = ["چاوەڕوانی هەواڵی تەلەگرام بە..."];
+async function fetchTelegramNews() {
+    const channelId = 'bazari_dolaraka'; 
+    const targetUrl = `https://t.me/s/${channelId}`;
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`;
+    try {
+        const response = await fetch(proxyUrl);
+        const textData = await response.text();
+        if (textData && textData.length > 100) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(textData, "text/html");
+            const messages = doc.querySelectorAll('.tgme_widget_message_text');
+            if (messages.length > 0) {
+                telegramNewsItems = []; 
+                const startIndex = messages.length - 1;
+                const limit = Math.max(0, messages.length - 5);
+                for (let i = startIndex; i >= limit; i--) {
+                    let rawHtml = messages[i].innerHTML;
+                    let formattedText = rawHtml.replace(/<br\s*\/?>/gi, " | ");
+                    let cleanText = formattedText.replace(/<[^>]*>/g, "");
+                    const txtArea = document.createElement("textarea");
+                    txtArea.innerHTML = cleanText;
+                    cleanText = txtArea.value;
+                    cleanText = cleanText.trim();
+                    if (cleanText.length > 1) { telegramNewsItems.push(`📢 ${cleanText}`); }
+                }
+                updateTickerDOM();
+            }
+        }
+    } catch (error) { console.log("Error fetching Telegram news: ", error); }
+}
+
+function updateTickerDOM() {
+    const container = document.getElementById('breakingNewsContainer');
+    if(!container) return;
+    const newsString = telegramNewsItems.map(item => 
+        `<span class="ticker-item-content" style="margin-right: 20px; color: #fff; display:inline-block;">${item}</span>`
+    ).join(" <span style='color:#d4af37; font-size:18px; padding:0 10px;'>✦</span> ");
+    container.innerHTML = newsString;
+}
+
+function startTelegramService() { fetchTelegramNews(); setInterval(fetchTelegramNews, 15000); }
+
+function toggleDarkMode() { document.body.classList.toggle('dark-mode'); }
+
+function updateLang() {
+    const lang = document.getElementById('langSel').value;
+    const t = translations[lang];
+    document.body.dir = (lang === 'en') ? 'ltr' : 'rtl';
+    document.getElementById('enterBtnTxt').innerText = t.splashBtn;
+    document.getElementById('splashTitle').innerText = t.splashTitle;
+    document.getElementById('sbTitle').innerText = t.sbTitle;
+    document.getElementById('menuKurdishNews').innerText = (lang === 'ku') ? "📰 هەواڵی بۆرسەی کوردی" : "📰 Kurdish Stock News";
+    document.getElementById('menuMarket').innerText = t.menuMarket;
+    document.getElementById('menuOil').innerText = t.menuOil;
+    document.getElementById('menuNews').innerText = t.menuNews;
+    document.getElementById('menuSettings').innerText = t.menuSettings;
+    document.getElementById('menuSilver').innerText = t.menuSilver;
+    document.getElementById('fbTitle').innerText = t.fbTitle;
+    document.getElementById('fbDesc').innerText = t.fbDesc;
+    document.getElementById('appHeaderTitle').innerText = t.appTitle;
+    document.getElementById('appHeaderSub').innerText = t.appSub;
+    document.getElementById('infoCardTxt').innerHTML = t.infoTxt;
+    document.getElementById('secTitle1').innerText = t.secTitle1;
+    document.getElementById('secTitle2').innerText = t.secTitle2;
+    document.getElementById('secTitle3').innerText = t.secTitle3;
+    document.getElementById('secTitle4').innerText = t.secTitle4;
+    
+    document.getElementById('lblUSD').innerText = t.lblUSD;
+    document.getElementById('lblEUR').innerText = t.lblEUR;
+    document.getElementById('lblGBP').innerText = t.lblGBP;
+    document.getElementById('lblTMN').innerText = t.lblTMN;
+    document.getElementById('lblTRY').innerText = t.lblTRY;
+    document.getElementById('lblSEK').innerText = t.lblSEK;
+    document.getElementById('lblNOK').innerText = t.lblNOK;
+    document.getElementById('lblSell').innerText = t.lblSell;
+    document.getElementById('lblGoldCalc').innerText = t.lblGoldCalc;
+    document.getElementById('lblGoldTable').innerText = t.lblGoldTable;
+    document.getElementById('lblCNY').innerText = t.lblCNY;
+
+    document.querySelectorAll('.t-rate').forEach(el => el.innerText = t.tRate);
+    document.querySelectorAll('.t-amount').forEach(el => el.innerText = t.tAmt);
+    document.querySelectorAll('.t-change').forEach(el => el.innerText = t.tChange);
+    document.querySelectorAll('.t-rateM').forEach(el => el.innerText = t.tRateM);
+    document.querySelectorAll('.t-amountM').forEach(el => el.innerText = t.tAmtM);
+    document.querySelectorAll('.t-changeM').forEach(el => el.innerText = t.tChangeM);
+    
+    document.getElementById('t-sellRate').innerText = t.tSellRate;
+    document.getElementById('t-sellAmt').innerText = t.tSellAmt;
+    document.getElementById('t-sellCent').innerText = t.tSellCent;
+    document.getElementById('t-ozGold').innerText = t.tOzGold;
+    document.getElementById('t-ozSilver').innerText = t.tOzSilver;
+    document.getElementById('btnRefreshGold').innerText = t.btnRef;
+    document.getElementById('btnResetCnt').innerText = t.btnReset;
+    
+    document.getElementById('t-gWeight').innerText = t.tgWeight;
+    document.getElementById('t-gPrice').innerText = t.tgPrice;
+    document.getElementById('t-gLabor').innerText = t.tgLabor;
+    document.getElementById('t-yRate').innerText = t.tyRate;
+    document.getElementById('t-yAmt').innerText = t.tyAmt;
+    document.getElementById('t-yChange').innerText = t.tyChange;
+    
+    document.getElementById('noteGoldTitle').innerText = t.noteGTitle;
+    document.getElementById('noteGoldDesc').innerText = t.noteGDesc;
+    
+    document.getElementById('setHead').innerText = t.setHead;
+    document.getElementById('setLangLabel').innerText = t.setLang;
+    document.getElementById('setBlur').innerText = t.setBlur;
+    document.getElementById('devLabel').innerText = t.devLbl;
+    document.getElementById('devInfo').innerText = t.devInf;
+    document.getElementById('footerTxt').innerHTML = t.footer;
+
+    document.getElementById('slvTitle').innerText = t.slvTitle;
+    document.getElementById('slvOzLabel').innerText = t.slvOz;
+    document.getElementById('slvKgLabel').innerText = t.slvKg;
+    document.getElementById('slvCalcTitle').innerText = t.slvHead;
+    document.getElementById('slvWeightLabel').innerText = t.slvW;
+    document.getElementById('slvBuyLabel').innerText = t.slvB;
+    document.getElementById('slvSellLabel').innerText = t.slvS;
+    document.getElementById('slvCalcBtn').innerText = t.slvBtn;
+    
+    document.getElementById('chartDollarTitle').innerText = t.chartD;
+    document.getElementById('chartOilTitle').innerText = t.chartO;
+    document.getElementById('newsTitle').innerText = t.newsHead;
+    document.getElementById('newsRefreshBtn').innerText = t.newsBtn;
+
+    const newsModal = document.getElementById('newsModal');
+    if(newsModal && newsModal.style.display === 'block') { fetchLiveNews(); }
+}
+
+async function fetchLiveNews() {
+    const lang = document.getElementById('langSel').value;
+    const t = translations[lang];
+    const container = document.getElementById('liveNewsContainer');
+    if(!container) return;
+    
+    document.getElementById('newsTitle').innerText = (lang === 'ku') ? "📰 هەواڵی بۆرسەی کوردی (جرکە بە جرکە)" : t.newsHead;
+    document.getElementById('newsRefreshBtn').innerText = t.newsBtn;
+    container.innerHTML = `<div class="loading-spinner">${t.newsWait}</div>`;
+
+    try {
+        const rssUrl = 'https://www.investing.com/rss/news.rss'; 
+        const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
+        const data = await response.json();
+
+        if (data.status === 'ok') {
+            container.innerHTML = ''; 
+            data.items.forEach(item => {
+                const date = new Date(item.pubDate);
+                const timeString = date.toLocaleTimeString((lang==='ar'?'ar-SA':'en-US'), { hour: '2-digit', minute: '2-digit' });
+                
+                let displayTitle = item.title;
+                if (lang !== 'en') {
+                    Object.keys(newsDict).forEach(key => {
+                        const regex = new RegExp(`\\b${key}\\b`, 'gi');
+                        if (regex.test(displayTitle)) { displayTitle = displayTitle.replace(regex, newsDict[key][lang]); }
+                    });
+                }
+                let icon = "📰";
+                if(item.title.includes("Gold")) icon = "🟡";
+                else if(item.title.includes("Oil")) icon = "🛢️";
+                else if(item.title.includes("Dollar") || item.title.includes("USD")) icon = "💵";
+
+                const newsHTML = `<div class="news-card"><a href="${item.link}" target="_blank" class="news-title">${icon} ${displayTitle}</a><div class="news-meta"><span>📅 ${timeString}</span><span>Investing.com</span></div></div>`;
+                container.innerHTML += newsHTML;
+            });
+        } else { container.innerHTML = `<p style="color:red; text-align:center;">${t.newsErr}</p>`; }
+    } catch (error) { container.innerHTML = `<p style="color:red; text-align:center;">${t.newsErr}</p>`; }
+}
+
+const iqdF = new Intl.NumberFormat('ckb-IQ', { style: 'currency', currency: 'IQD', maximumFractionDigits: 0 });
+const usdF = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+function toggleNav() {
+    const sidebar = document.getElementById("mySidebar");
+    sidebar.style.left = (sidebar.style.left === "0px") ? "-280px" : "0px";
+}
+
+function openModal(id) {
+    closeAllModals();
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = "block";
+        document.getElementById("mySidebar").style.left = "-280px";
+        if (id === 'newsModal') fetchLiveNews();
+        setTimeout(() => {
+            if (id === 'dollarModal') renderChart('dollarChartCanvas', 'Dollar Index 2026', [102, 105, 104, 106, 108], '#d4af37');
+            if (id === 'oilModal') renderChart('oilChartCanvas', 'Oil Basra ($)', [76, 79, 82, 80, 85], '#2ecc71');
+        }, 300);
+    }
+}
+
+function closeAllModals() { document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none'); }
+
+let activeCharts = {};
+function renderChart(canvasId, title, dataPoints, color) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (activeCharts[canvasId]) activeCharts[canvasId].destroy();
+    activeCharts[canvasId] = new Chart(ctx, {
+        type: 'line',
+        data: { labels: ['2022', '2023', '2024', '2025', '2026'], datasets: [{ label: title, data: dataPoints, borderColor: color, backgroundColor: color + '33', fill: true, tension: 0.4 }] },
+        options: { responsive: true }
+    });
+}
+
+function syncAll() {
+    let r = Number(document.getElementById('rUSD').value);
+    document.getElementById('rSell').value = r + 250;
+    ['USD', 'EUR', 'GBP', 'TMN', 'TRY', 'SEK', 'NOK', 'Sell'].forEach(t => calc(t));
+    calcGold(); calcYuan(); 
+}
+
+function calc(type) {
+    let r = Number(document.getElementById('r' + type).value) || 0;
+    let aElem = document.getElementById(type === 'Sell' ? 'aSell' : 'a' + type);
+    let wElem = document.getElementById(type === 'Sell' ? 'wSell' : 'w' + type);
+    let a = Number(aElem.value) || 0;
+    let w = Number(wElem.value) || 0;
+    let total = (type === 'TMN') ? (r * a) + Number(w) : ((r * a) / 100) + Number(w);
+    if (type === 'Sell' && r > 0) total = ((a / r) * 100) + (w / 100);
+    let display = (type === 'Sell') ? usdF.format(total) : iqdF.format(total);
+    if(document.getElementById('res' + type)) document.getElementById('res' + type).innerText = display;
+    if(document.getElementById('word' + type)) {
+        let label = (type === 'Sell') ? " دۆلار" : " دینار";
+        let written = nToK(Math.floor(total));
+        document.getElementById('word' + type).innerText = written ? (written + label) : "";
+    }
+    countAll();
+}
+
+function calcYuan() {
+    let dollarRate = parseFloat(document.getElementById('rUSD').value) || 150000;
+    let oneYuanInDinar = (dollarRate / 100) / 7.20;
+    document.getElementById('yRateDisp').value = Math.round(oneYuanInDinar) + " د.ع";
+    let amount = parseFloat(document.getElementById('aYuan').value) || 0;
+    let extra = parseFloat(document.getElementById('wYuan').value) || 0;
+    let total = (amount * oneYuanInDinar) + extra;
+    document.getElementById('resYuan').innerText = Math.round(total).toLocaleString() + " د.ع.";
+}
+
+// --- فانکشنی نوێی عمولە (New Logic) ---
+function calculateCommission() {
+    let amount = parseFloat(document.getElementById('moneyInputComm').value) || 0;
+    let rate = parseFloat(document.getElementById('commRateSel').value);
+    let divVal = parseFloat(document.getElementById('commDivider').value);
+    
+    // ڕوونکردنەوە بۆ کڕیار
+    let per100k = rate * 100000;
+    document.getElementById('commExplanation').innerText = `بۆ زانیاریت: بۆ هەر ١٠٠ هەزار دینار، بڕی ${per100k.toLocaleString()} دینار عمولە وەردەگیرێت.`;
+
+    if (amount > 0) {
+        let commission = amount * rate;
+        let netAmount = amount - commission;
+        let sharedPart = commission / divVal;
+        
+        document.getElementById('commResVal').innerText = Math.floor(commission).toLocaleString() + " د.ع";
+        document.getElementById('netResVal').innerText = Math.floor(netAmount).toLocaleString() + " د.ع";
+        
+        if(divVal > 1) {
+            document.getElementById('sharedCommRow').style.display = 'flex';
+            document.getElementById('sharedResVal').innerText = Math.floor(sharedPart).toLocaleString() + " د.ع";
+        } else {
+            document.getElementById('sharedCommRow').style.display = 'none';
+        }
+
+        let written = nToK(Math.floor(commission));
+        document.getElementById('wordCommResult').innerText = written ? "بە نوسین: " + written + " دینار" : "";
+    } else {
+        document.getElementById('commResVal').innerText = "٠ د.ع";
+        document.getElementById('netResVal').innerText = "٠ د.ع";
+        document.getElementById('sharedCommRow').style.display = 'none';
+        document.getElementById('wordCommResult').innerText = "";
+    }
+}
+
+async function fetchGoldPrice() {
+    try {
+        const response = await fetch('https://api.gold-api.com/price/XAU');
+        const data = await response.json();
+        if(data.price) {
+            document.getElementById('goldOunce').value = data.price;
+            const sResponse = await fetch('https://api.gold-api.com/price/XAG');
+            const sData = await sResponse.json();
+            document.getElementById('silverOunce').value = sData.price;
+            document.getElementById('silverOunceDisplay').innerText = "$" + sData.price;
+            document.getElementById('silverKilo').innerText = "$" + (sData.price * 32.15).toFixed(2);
+            calcGold();
+        }
+    } catch (e) { calcGold(); }
+}
+
+function calcGold() {
+    let usd = Number(document.getElementById('rUSD').value) / 100;
+    let gO = Number(document.getElementById('goldOunce').value);
+    let pGram24 = (gO / 31.1035);
+    let m24_iqd = (pGram24 * 5) * usd;
+    let carats = [{n: 24, ratio: 24/24}, {n: 22, ratio: 22/24}, {n: 21, ratio: 21/24}, {n: 18, ratio: 18/24}];
+    let tableHtml = `<table class="gold-table"><tr><th>عەیار</th><th>١ گرام</th><th>١ میسقاڵ (٥گ)</th></tr>`;
+    carats.forEach(c => {
+        let gramPrice = (pGram24 * c.ratio) * usd;
+        let misqalPrice = gramPrice * 5;
+        tableHtml += `<tr><td>عەیار ${c.n}</td><td>${Math.floor(gramPrice).toLocaleString()}</td><td style="color:var(--primary)">${Math.floor(misqalPrice).toLocaleString()}</td></tr>`;
+    });
+    tableHtml += `</table>`;
+    const detailedBox = document.getElementById('detailedGoldPrices');
+    if(detailedBox) detailedBox.innerHTML = tableHtml;
+    const goldRes = document.getElementById('goldRes');
+    if(goldRes) {
+        goldRes.innerHTML = `<div class="gold-row"><span>میسقاڵ ٢٤:</span> <span>${iqdF.format(m24_iqd)}</span></div><div class="gold-row" style="color:#e67e22;"><span>میسقاڵ ٢١:</span> <span>${iqdF.format(m24_iqd*21/24)}</span></div>`;
+    }
+}
+
+function calcCustomGold() {
+    let weight = Number(document.getElementById('gWeight').value) || 0;
+    let price = Number(document.getElementById('gPrice').value) || 0;
+    let labor = Number(document.getElementById('gLabor').value) || 0;
+    let total = weight * (price + labor);
+    document.getElementById('resCustomGold').innerText = iqdF.format(total);
+    let written = nToK(Math.floor(total));
+    document.getElementById('wordCustomGold').innerText = written ? (written + " دینار") : "";
+}
+
+function calculateSilver() {
+    let weight = parseFloat(document.getElementById('silverWeight').value) || 0;
+    let buy = parseFloat(document.getElementById('silverBuyPrice').value) || 0;
+    let sell = parseFloat(document.getElementById('silverSellPrice').value) || 0;
+    let totalBuy = (weight * buy).toFixed(2);
+    let totalSell = (weight * sell).toFixed(2);
+    let profit = (totalSell - totalBuy).toFixed(2);
+    document.getElementById('silverResult').innerHTML = `کۆی کڕین: $${totalBuy} <br> کۆی فرۆشتن: $${totalSell} <br> قازانج: $${profit}`;
+}
+
+const cntConfig = {
+    IQD: { n: [50000, 25000, 10000, 5000, 1000], c: ["#4834d4", "#eb4d4b", "#6ab04c", "#f0932b", "#535c68"] },
+    USD: { n: [100, 50, 20, 10, 5, 1], c: Array(6).fill("#27ae60") },
+    GBP: { n: [50, 20, 10, 5], c: ["#c0392b", "#8e44ad", "#27ae60", "#2980b9"] },
+    NOK: { n: [1000, 500, 200, 100, 50], c: ["#c0392b", "#2980b9", "#27ae60", "#f39c12", "#8e44ad"] },
+    TMN: { n: [1000000, 500000, 100000, 50000], c: ["#c0392b", "#e67e22", "#f1c40f", "#f06292"] },
+    EUR: { n: [200, 100, 50, 20, 10, 5], c: Array(6).fill("#2980b9") },
+    TRY: { n: [200, 100, 50, 20, 10, 5], c: Array(6).fill("#e74c3c") }
+};
+
+function updateCounterUI() {
+    const cur = document.getElementById('cntCur').value;
+    const container = document.getElementById('cntFields');
+    container.innerHTML = '';
+    if(!cntConfig[cur]) return;
+    cntConfig[cur].n.forEach((val, i) => {
+        let label = val.toLocaleString();
+        container.innerHTML += `<div class="counter-row"><div class="note-tag" style="background:${cntConfig[cur].c[i] || '#333'}">${label}</div><input type="number" class="cnt-in" data-note="${val}" oninput="countAll()"></div>`;
+    });
+    countAll();
+}
+
+function countAll() {
+    const cur = document.getElementById('cntCur').value;
+    let total = 0;
+    document.querySelectorAll('.cnt-in').forEach(input => {
+        let qty = Number(input.value) || 0;
+        let val = Number(input.dataset.note);
+        total += qty * val;
+    });
+    document.getElementById('cntTotal').innerText = "کۆ: " + total.toLocaleString() + " " + cur;
+    let iqd = 0;
+    let rU = Number(document.getElementById('rUSD').value);
+    if (cur === 'IQD') iqd = total;
+    else if (cur === 'USD') iqd = (total / 100) * rU;
+    else {
+        let rate = 0;
+        if(document.getElementById('r' + cur)) rate = Number(document.getElementById('r' + cur).value);
+        if(cur === 'TMN') iqd = (total / 1000000) * rate;
+        else iqd = (total / 100) * rate;
+    }
+    document.getElementById('iqdEq').innerText = "بە دینار: " + iqdF.format(iqd);
+}
+
+function resetCounterOnly() { document.querySelectorAll('.cnt-in').forEach(i => i.value = ''); countAll(); }
+
+function nToK(n) {
+    if (n === 0) return "";
+    const u = ["", "یەک", "دوو", "سێ", "چوار", "پێنج", "شەش", "حەوت", "هەشت", "نۆ"];
+    const t = ["دە", "یازدە", "دوازدە", "سێزدە", "چواردە", "پازدە", "شازدە", "حەفدە", "هەژدە", "نۆزدە"];
+    const ts = ["", "", "بیست", "سی", "چل", "پەنجا", "شەست", "حەفتا", "هەشتا", "نەوەد"];
+    const h = ["", "سەد", "دووسەد", "سێسەد", "چوارسەد", "پێنجسەد", "شەشسەد", "حەوتسەد", "هەشتسەد", "نۆسەد"];
+    function c(num) {
+        if (num < 10) return u[num]; if (num < 20) return t[num - 10];
+        if (num < 100) return ts[Math.floor(num / 10)] + (num % 10 !== 0 ? " و " + c(num % 10) : "");
+        if (num < 1000) return h[Math.floor(num / 100)] + (num % 100 !== 0 ? " و " + c(num % 100) : "");
+        if (num < 1000000) return (Math.floor(num / 1000) === 1 ? "" : c(Math.floor(num / 1000))) + " هەزار" + (num % 1000 !== 0 ? " و " + c(num % 1000) : "");
+        if (num < 1000000000) return c(Math.floor(num / 1000000)) + " ملیۆن" + (num % 1000000 !== 0 ? " و " + c(num % 1000000) : "");
+        return num;
+    }
+    return c(Math.floor(n));
+}
+
+function clearCurrencyInputs() {
+    document.querySelectorAll('.cust-in').forEach(input => input.value = '');
+    ['USD', 'EUR', 'GBP', 'TMN', 'TRY', 'SEK', 'NOK', 'Sell'].forEach(t => calc(t));
+    document.getElementById('gWeight').value = '';
+    document.getElementById('gPrice').value = '';
+    document.getElementById('gLabor').value = '';
+    calcCustomGold();
+    document.getElementById('aYuan').value = '';
+    document.getElementById('wYuan').value = '';
+    calcYuan();
+}
+
+function applyBlur() {
+    const isChecked = document.getElementById('blurCheck').checked;
+    const wrapper = document.getElementById('mainWrapper');
+    if (wrapper) wrapper.style.filter = isChecked ? "blur(8px)" : "none";
+}
+
+// 3D CLICK ANIMATION LOGIC
+document.addEventListener('click', function(e) {
+    if(e.target.tagName === 'INPUT') return;
+    const container = document.getElementById('clickEffects');
+    const x = e.clientX;
+    const y = e.clientY;
+    const wave = document.createElement('div');
+    wave.classList.add('click-shockwave');
+    wave.style.left = x + 'px';
+    wave.style.top = y + 'px';
+    container.appendChild(wave);
+    for(let i=0; i<8; i++) {
+        const part = document.createElement('div');
+        part.classList.add('click-particle');
+        const size = Math.random() * 8 + 4;
+        part.style.width = size + 'px';
+        part.style.height = size + 'px';
+        part.style.background = (Math.random() > 0.5) ? '#d4af37' : '#3498db';
+        part.style.left = x + 'px';
+        part.style.top = y + 'px';
+        const destX = (Math.random() - 0.5) * 100;
+        const destY = (Math.random() - 0.5) * 100;
+        part.style.setProperty('--tx', destX + 'px');
+        part.style.setProperty('--ty', destY + 'px');
+        part.style.animation = `particleFade 0.6s ease-out forwards`;
+        container.appendChild(part);
+        setTimeout(() => part.remove(), 600);
+    }
+    setTimeout(() => wave.remove(), 800);
+});
+
+window.onload = () => { 
+    startTelegramService(); 
+    updateCounterUI(); 
+    syncAll(); 
+    fetchGoldPrice(); 
+};
+</script>
+</body>
+</html>
